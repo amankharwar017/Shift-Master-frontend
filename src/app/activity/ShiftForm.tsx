@@ -4,11 +4,11 @@ import { Box, Button, Divider, Paper, Typography } from "@mui/material";
 import TextField from "../../components/TextField";
 import TextArea from "../../components/TextArea";
 import DropDown from "../../components/DropDown";
-import MultiSelect from "../../components/MultiSelect";
+import MultiselectAutoComplete from "../../components/MultiselectAutoComplete";
 import CheckBox from "../../components/CheckBox";
 import Attachment from "../../components/Attachment";
 import RadioButton from "../../components/RadioButton";
-import { saveShift, getShiftById, updateShift } from "../../api/shiftApi";
+import { saveShift, getShiftById, updateShift } from "./shiftApi";
 import { shiftValidationSchema } from "../../shiftValidation/ShiftValidation";
 import type { ShiftFormData } from "../../types/shift";
 
@@ -64,28 +64,67 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = event.target;
-    setFormData((previous) => ({ ...previous, [name]: value }));
-    setErrors((previous) => ({ ...previous, [name]: "" }));
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+
+    setErrors((previous) => ({
+      ...previous,
+      [name]: "",
+    }));
   };
 
-  const handleNumberChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleNumberChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = event.target;
-    setFormData((previous) => ({ ...previous, [name]: value === "" ? null : Number(value), }));
-    setErrors((previous) => ({ ...previous, [name]: "" }));
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value === "" ? null : Number(value),
+    }));
+
+    setErrors((previous) => ({
+      ...previous,
+      [name]: "",
+    }));
   };
 
-  const handleCheckBoxChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+  const handleCheckBoxChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
     const { name } = event.target;
-    setFormData((previous) => ({ ...previous, [name]: checked }));
-    setErrors((previous) => ({ ...previous, [name]: "" }));
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: checked,
+    }));
+
+    setErrors((previous) => ({
+      ...previous,
+      [name]: "",
+    }));
   };
 
   const handleFileChange = (file: File | null) => {
     setSelectedFile(file);
-    setFormData((previous) => ({ ...previous, attachment: file?.name ?? "", }));
-    setErrors((previous) => ({ ...previous, attachment: "" }));
+
+    setFormData((previous) => ({
+      ...previous,
+      attachment: file?.name ?? "",
+    }));
+
+    setErrors((previous) => ({
+      ...previous,
+      attachment: "",
+    }));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -94,7 +133,9 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
     setErrors({});
 
     try {
-      await shiftValidationSchema.validate(formData, { abortEarly: false });
+      await shiftValidationSchema.validate(formData, {
+        abortEarly: false,
+      });
 
       const payload = {
         shiftCode: formData.shiftCode,
@@ -111,7 +152,9 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
         nightShift: formData.nightShift,
         weeklyOff: formData.weeklyOff,
         shiftColor: formData.shiftColor || null,
-        applicableDays: formData.applicableDays.map((day) => day.toUpperCase()),
+        applicableDays: formData.applicableDays.map((day) =>
+          day.toUpperCase()
+        ),
         description: formData.description || null,
         attachment: formData.attachment || null,
         remarks: formData.remarks || null,
@@ -120,11 +163,20 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
 
       if (editShiftId !== null) {
         const response = await updateShift(editShiftId, payload);
-        setMessage(response.data?.message ?? "Shift updated successfully.");
-        onSuccess(response.data?.message ?? "Shift updated successfully.");
+
+        setMessage(
+          response.data?.message ?? "Shift updated successfully."
+        );
+
+        onSuccess(
+          response.data?.message ?? "Shift updated successfully."
+        );
       } else {
         const response = await saveShift(payload);
-        const successMessage = response.data?.message ?? "Shift saved successfully.";
+
+        const successMessage =
+          response.data?.message ?? "Shift saved successfully.";
+
         setMessage(successMessage);
         onSuccess(successMessage);
       }
@@ -134,7 +186,12 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
     } catch (error: unknown) {
       if (error instanceof Error && error.name === "ValidationError") {
         const validationErrors: Record<string, string> = {};
-        const yupError = error as { inner?: Array<{ path?: string; message: string }>; };
+        const yupError = error as {
+          inner?: Array<{
+            path?: string;
+            message: string;
+          }>;
+        };
 
         yupError.inner?.forEach((item) => {
           if (item.path && !validationErrors[item.path]) {
@@ -146,8 +203,17 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
         return;
       }
 
-      const axiosError = error as { response?: { data?: { message?: string; error?: Record<string, string> } }};
+      const axiosError = error as {
+        response?: {
+          data?: {
+            message?: string;
+            error?: Record<string, string>;
+          };
+        };
+      };
+
       const backendMessage = axiosError.response?.data?.message;
+
       setMessage(backendMessage ?? "Failed to save shift.");
     }
   };
@@ -202,8 +268,9 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
           <Typography variant="h6" className="shift-form-title">
             Shift Details
           </Typography>
-          <Typography variant="body2" className="shift-form-subtitle">
 
+          <Typography variant="body2" className="shift-form-subtitle">
+            Create and manage shift details
           </Typography>
         </Box>
 
@@ -219,6 +286,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             error={Boolean(errors.shiftCode)}
             helperText={errors.shiftCode}
           />
+
           <TextField
             label="Shift Name"
             name="shiftName"
@@ -228,6 +296,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             error={Boolean(errors.shiftName)}
             helperText={errors.shiftName}
           />
+
           <TextField
             label="Display Name"
             name="displayName"
@@ -236,16 +305,23 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             error={Boolean(errors.displayName)}
             helperText={errors.displayName}
           />
+
           <DropDown
             label="Shift Type"
             name="shiftType"
             value={formData.shiftType}
             options={shiftTypeOptions}
-            onChange={(event) => setFormData((previous) => ({ ...previous, shiftType: String(event.target.value), }))}
+            onChange={(event) =>
+              setFormData((previous) => ({
+                ...previous,
+                shiftType: String(event.target.value),
+              }))
+            }
             required
             error={Boolean(errors.shiftType)}
             helperText={errors.shiftType}
           />
+
           <TextField
             label="Start Time"
             name="startTime"
@@ -256,6 +332,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             error={Boolean(errors.startTime)}
             helperText={errors.startTime}
           />
+
           <TextField
             label="End Time"
             name="endTime"
@@ -266,6 +343,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             error={Boolean(errors.endTime)}
             helperText={errors.endTime}
           />
+
           <TextField
             label="Break Start"
             name="breakStart"
@@ -275,6 +353,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             error={Boolean(errors.breakStart)}
             helperText={errors.breakStart}
           />
+
           <TextField
             label="Break End"
             name="breakEnd"
@@ -284,24 +363,35 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             error={Boolean(errors.breakEnd)}
             helperText={errors.breakEnd}
           />
+
           <TextField
             label="Grace In"
             name="graceIn"
-            value={formData.graceIn === null ? "" : String(formData.graceIn)}
+            value={
+              formData.graceIn === null
+                ? ""
+                : String(formData.graceIn)
+            }
             onChange={handleNumberChange}
             type="number"
             error={Boolean(errors.graceIn)}
             helperText={errors.graceIn}
           />
+
           <TextField
             label="Grace Out"
             name="graceOut"
-            value={formData.graceOut === null ? "" : String(formData.graceOut)}
+            value={
+              formData.graceOut === null
+                ? ""
+                : String(formData.graceOut)
+            }
             onChange={handleNumberChange}
             type="number"
             error={Boolean(errors.graceOut)}
             helperText={errors.graceOut}
           />
+
           <TextField
             label="Shift Color"
             name="shiftColor"
@@ -310,12 +400,18 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             error={Boolean(errors.shiftColor)}
             helperText={errors.shiftColor}
           />
-          <MultiSelect
+
+          <MultiselectAutoComplete
             label="Applicable Days"
             name="applicableDays"
             value={formData.applicableDays}
             options={dayOptions}
-            onChange={(event) => setFormData((previous) => ({ ...previous, applicableDays: event.target.value as string[], }))}
+            onChange={(value) =>
+              setFormData((previous) => ({
+                ...previous,
+                applicableDays: value,
+              }))
+            }
             error={Boolean(errors.applicableDays)}
             helperText={errors.applicableDays}
           />
@@ -328,12 +424,14 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             checked={formData.overtimeAllowed}
             onChange={handleCheckBoxChange}
           />
+
           <CheckBox
             label="Night Shift"
             name="nightShift"
             checked={formData.nightShift}
             onChange={handleCheckBoxChange}
           />
+
           <CheckBox
             label="Weekly Off"
             name="weeklyOff"
@@ -352,6 +450,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             helperText={errors.description}
             minRows={4}
           />
+
           <TextArea
             label="Remarks"
             name="remarks"
@@ -369,6 +468,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
             accept=".pdf,.doc,.docx"
             onChange={handleFileChange}
           />
+
           {selectedFile && (
             <Typography
               variant="body2"
@@ -377,6 +477,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
               Selected file: {selectedFile.name}
             </Typography>
           )}
+
           {errors.attachment && (
             <Typography
               variant="caption"
@@ -396,15 +497,23 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
               { label: "Active", value: "true" },
               { label: "Inactive", value: "false" },
             ]}
-            onChange={(_, value) => setFormData((previous) => ({ ...previous, status: value === "true", }))}
+            onChange={(_, value) =>
+              setFormData((previous) => ({
+                ...previous,
+                status: value === "true",
+              }))
+            }
             row
           />
         </Box>
 
         {message && (
           <Box
-            className={`shift-form-message ${message.toLowerCase().includes("failed") ? "shift-form-message-error" : "shift-form-message-success"
-              }`}
+            className={`shift-form-message ${
+              message.toLowerCase().includes("failed")
+                ? "shift-form-message-error"
+                : "shift-form-message-success"
+            }`}
           >
             <Typography variant="body2">{message}</Typography>
           </Box>
@@ -419,6 +528,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
           >
             Back
           </Button>
+
           <Button
             type="submit"
             variant="contained"

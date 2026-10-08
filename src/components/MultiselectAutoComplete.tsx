@@ -1,4 +1,10 @@
-import { Autocomplete, Checkbox, TextField, } from "@mui/material";
+import {
+  Autocomplete,
+  Checkbox,
+  FormControl,
+  FormHelperText,
+  TextField,
+} from "@mui/material";
 
 interface MultiselectAutoCompleteOption {
   label: string;
@@ -7,42 +13,72 @@ interface MultiselectAutoCompleteOption {
 
 interface MultiselectAutoCompleteProps {
   label: string;
-  value: MultiselectAutoCompleteOption[];
+  name: string;
+  value: string[];
   options: MultiselectAutoCompleteOption[];
-  onChange: (
-    value: MultiselectAutoCompleteOption[]
-  ) => void;
+  onChange: (value: string[]) => void;
+  error?: boolean;
+  helperText?: string;
 }
 
 function MultiselectAutoComplete({
   label,
+  name,
   value,
   options,
   onChange,
+  error = false,
+  helperText = "",
 }: MultiselectAutoCompleteProps) {
+  const selectedOptions = options.filter((option) =>
+    value.includes(option.value)
+  );
+
   return (
-    <Autocomplete
-      multiple
+    <FormControl
       fullWidth
-      options={options}
-      value={value}
-      disableCloseOnSelect
-      getOptionLabel={(option) => option.label}
-      isOptionEqualToValue={(option, selectedOption) => option.value === selectedOption.value}
-      onChange={(_, newValue) => onChange(newValue)}
+      error={error}
       className="custom-multiselect-autocomplete"
-      renderOption={(props, option, { selected }) => (
-        <li {...props}>
-          <Checkbox
-            checked={selected}
-            sx={{ marginRight: 1 }}
+    >
+      <Autocomplete
+        multiple
+        fullWidth
+        openOnFocus
+        options={options}
+        value={selectedOptions}
+        disableCloseOnSelect
+        filterSelectedOptions={false}
+        getOptionLabel={(option) => option.label}
+        isOptionEqualToValue={(option, selectedOption) =>
+          option.value === selectedOption.value
+        }
+        onChange={(_, newValue) => {
+          onChange(newValue.map((option) => option.value));
+        }}
+        className="custom-multiselect-autocomplete-field"
+        renderOption={(props, option, { selected }) => (
+          <li {...props} key={option.value}>
+            <Checkbox
+              checked={selected}
+              className="custom-multiselect-autocomplete-checkbox"
+            />
+            {option.label}
+          </li>
+        )}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={label}
+            name={name}
+            error={error}
           />
-          {option.label}
-        </li>
+        )}
+      />
+
+      {helperText && (
+        <FormHelperText>{helperText}</FormHelperText>
       )}
-      renderInput={(params) => (<TextField   {...params} label={label} />
-      )}
-    />
+    </FormControl>
   );
 }
 

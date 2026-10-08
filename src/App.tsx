@@ -1,42 +1,30 @@
 import { useEffect, useState } from "react";
 import type { GridSortModel } from "@mui/x-data-grid";
-import { Alert, Drawer, Snackbar } from "@mui/material";
+import { Alert, Box, Button, Drawer, Snackbar,} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { useDispatch, useSelector } from "react-redux";
-import DashboardLayout from "./components/DashboardLayout";
+import Sidebar from "./app/layout/Sidebar";
+import Header from "./app/layout/Header";
 import ShiftSummaryCards from "./app/activity/ShiftSummaryCards";
 import ShiftForm from "./app/activity/ShiftForm";
 import ShiftTable from "./app/activity/ShiftTable";
 import ShiftSearchForm from "./app/activity/ShiftSearchForm";
-import {
-  getShiftList,
-  getShiftById,
-  searchShifts,
-  deleteShift,
-} from "./api/shiftApi";
+import { getShiftList, getShiftById, searchShifts, deleteShift,} from "./app/activity/shiftApi";
 import type { ShiftResponse } from "./types/shift";
 import type { RootState } from "./redux/store";
 import { setShifts, setSelectedShift } from "./redux/slices/shiftSlice";
 
 function App() {
   const dispatch = useDispatch();
-
   const shifts = useSelector((state: RootState) => state.shift.shifts);
-  const selectedShift = useSelector(
-    (state: RootState) => state.shift.selectedShift
-  );
-
+  const selectedShift = useSelector( (state: RootState) => state.shift.selectedShift );
   const [showForm, setShowForm] = useState(false);
   const [showList, setShowList] = useState(true);
   const [showSearch, setShowSearch] = useState(false);
   const [editShiftId, setEditShiftId] = useState<number | null>(null);
   const [searchParams, setSearchParams] = useState<Record<string, any>>({});
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 10,
-  });
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    { field: "id", sort: "asc" },
-  ]);
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10, });
+  const [sortModel, setSortModel] = useState<GridSortModel>([ { field: "id", sort: "asc" },]);
   const [totalRows, setTotalRows] = useState(0);
   const [totalShifts, setTotalShifts] = useState(0);
   const [activeShifts, setActiveShifts] = useState(0);
@@ -46,18 +34,13 @@ function App() {
 
   const fetchShifts = async () => {
     try {
-      const sort =
-        sortModel.length > 0
-          ? `${sortModel[0].field},${sortModel[0].sort}`
-          : "id,asc";
+      const sort = sortModel.length > 0 ? `${sortModel[0].field},${sortModel[0].sort}`: "id,asc";
 
       if (Object.keys(searchParams).length > 0) {
         let response;
-
-        if (searchParams.searchText?.trim()) {
+         if (searchParams.searchText?.trim()) {
           const searchText = searchParams.searchText.trim();
           const { searchText: _, ...otherParams } = searchParams;
-
           response = await searchShifts(
             { ...otherParams, shiftCode: searchText },
             paginationModel.page,
@@ -65,10 +48,7 @@ function App() {
             sort
           );
 
-          let filteredContent = (response.data?.content ?? []).filter(
-            (shift: ShiftResponse) =>
-              shift.shiftCode?.toLowerCase() === searchText.toLowerCase()
-          );
+          let filteredContent = (response.data?.content ?? []).filter((shift: ShiftResponse) => shift.shiftCode?.toLowerCase() === searchText.toLowerCase());
 
           if (filteredContent.length === 0) {
             response = await searchShifts(
@@ -78,12 +58,8 @@ function App() {
               sort
             );
 
-            filteredContent = (response.data?.content ?? []).filter(
-              (shift: ShiftResponse) =>
-                shift.shiftName?.toLowerCase() === searchText.toLowerCase()
-            );
+            filteredContent = (response.data?.content ?? []).filter( (shift: ShiftResponse) => shift.shiftName?.toLowerCase() === searchText.toLowerCase() );
           }
-
           dispatch(setShifts(filteredContent));
           setTotalRows(filteredContent.length);
         } else {
@@ -98,12 +74,7 @@ function App() {
           setTotalRows(response.data?.totalElements ?? 0);
         }
       } else {
-        const response = await getShiftList(
-          paginationModel.page,
-          paginationModel.pageSize,
-          sort
-        );
-
+        const response = await getShiftList(paginationModel.page, paginationModel.pageSize, sort);
         dispatch(setShifts(response.data?.content ?? []));
         setTotalRows(response.data?.totalElements ?? 0);
       }
@@ -209,54 +180,62 @@ function App() {
 
   const handleSearch = (searchData: Record<string, any>) => {
     setSearchParams(searchData);
-    setPaginationModel({
-      page: 0,
-      pageSize: paginationModel.pageSize,
-    });
+    setPaginationModel({page: 0,pageSize: paginationModel.pageSize,});
     setShowSearch(false);
     setShowList(true);
   };
 
   return (
     <>
-      <DashboardLayout
-        onAddShift={handleAddShift}
-        showAddButton={!showForm}
-      >
-       
+      <Box className="dashboard-layout">
+        <Sidebar />
 
-        <div className="dashboard-search-summary">
-          <ShiftSearchForm onSearch={handleSearch} />
+        <Box component="main" className="dashboard-main">
+          <Header />
 
-          <ShiftSummaryCards
-            total={totalShifts}
-            active={activeShifts}
-            inactive={inactiveShifts}
-            night={nightShifts}
-          />
-        </div>
+          <Box className="dashboard-content">
+            <div className="dashboard-search-summary">
+              <ShiftSearchForm onSearch={handleSearch} />
 
-        <ShiftTable
-          rows={shifts}
-          rowCount={totalRows}
-          paginationModel={paginationModel}
-          onPaginationChange={setPaginationModel}
-          sortModel={sortModel}
-          onSortChange={setSortModel}
-          edit={handleEdit}
-          view={handleView}
-          deleteShift={handleDelete}
-          selectedShift={selectedShift}
-          onCloseView={handleCloseView}
-        />
-      </DashboardLayout>
+              <ShiftSummaryCards
+                total={totalShifts}
+                active={activeShifts}
+                inactive={inactiveShifts}
+                night={nightShifts}
+              />
+            </div>
+
+            <ShiftTable
+              rows={shifts}
+              rowCount={totalRows}
+              paginationModel={paginationModel}
+              onPaginationChange={setPaginationModel}
+              sortModel={sortModel}
+              onSortChange={setSortModel}
+              edit={handleEdit}
+              view={handleView}
+              deleteShift={handleDelete}
+              selectedShift={selectedShift}
+              onCloseView={handleCloseView}
+            />
+          </Box>
+
+          {!showForm && (
+            <Button
+              variant="contained"
+              onClick={handleAddShift}
+              className="dashboard-add-button" >
+              <AddIcon />
+            </Button>
+          )}
+        </Box>
+      </Box>
 
       <Drawer
         anchor="right"
         open={showForm}
         onClose={handleBackToList}
-        className="shift-form-drawer"
-      >
+        className="shift-form-drawer">
         <div className="shift-form-drawer-content">
           <ShiftForm
             editShiftId={editShiftId}
@@ -277,16 +256,11 @@ function App() {
         open={Boolean(successMessage)}
         autoHideDuration={2000}
         onClose={() => setSuccessMessage("")}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-      >
+        anchorOrigin={{vertical: "bottom", horizontal: "left",}}>
         <Alert
           onClose={() => setSuccessMessage("")}
           severity="success"
-          variant="filled"
-        >
+          variant="filled">
           {successMessage}
         </Alert>
       </Snackbar>
