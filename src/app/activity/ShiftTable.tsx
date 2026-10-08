@@ -1,27 +1,9 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Typography, } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import {
-  DataGrid,
-  type GridColDef,
-  type GridPaginationModel,
-  type GridSortModel,
-} from "@mui/x-data-grid";
-import type { ShiftResponse } from "../types/shift";
+import { DataGrid, type GridColDef, type GridPaginationModel, type GridSortModel } from "@mui/x-data-grid";
+import type { ShiftResponse } from "../../types/shift";
 
 interface ShiftTableProps {
   rows: ShiftResponse[];
@@ -52,12 +34,53 @@ function ShiftTable({
 }: ShiftTableProps) {
   const columns: GridColDef<ShiftResponse>[] = [
     {
+      field: "actions",
+      headerName: "Action",
+      minWidth: 150,
+      flex: 1,
+      resizable: false,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Box className="shift-table-actions">
+          <Tooltip title="Delete">
+            <IconButton
+              size="small"
+              className="shift-delete-button"
+              onClick={() => deleteShift(params.row.id)}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton
+              size="small"
+              className="shift-edit-button"
+              onClick={() => edit(params.row.id)}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="View">
+            <IconButton
+              size="small"
+              className="shift-view-button"
+              onClick={() => view(params.row.id)}
+            >
+              <VisibilityIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
+    {
       field: "shiftCode",
       headerName: "Shift Code",
       minWidth: 130,
       flex: 1,
       resizable: false,
-      sortable: false,
+      sortable: true,
       filterable: false,
       disableColumnMenu: true,
     },
@@ -174,6 +197,19 @@ function ShiftTable({
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
+      renderCell: (params) => {
+        const value = String(params.value || "");
+        const [date, time] = value.split("T");
+
+        return (
+          <div style={{ lineHeight: "20px" }}>
+            {date}
+            <br />
+            {time?.split(".")[0]}
+          </div>
+        );
+      },
+
     },
     {
       field: "updatedAt",
@@ -184,50 +220,20 @@ function ShiftTable({
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-    },
-    {
-      field: "actions",
-      headerName: "Action",
-      minWidth: 150,
-      flex: 1,
-      resizable: false,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      renderCell: (params) => (
-        <Box className="shift-table-actions">
-          <Tooltip title="View">
-            <IconButton
-              size="small"
-              className="shift-view-button"
-              onClick={() => view(params.row.id)}
-            >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+      renderCell: (params) => {
+        const value = String(params.value || "");
+        const [date, time] = value.split("T");
 
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              className="shift-edit-button"
-              onClick={() => edit(params.row.id)}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              className="shift-delete-button"
-              onClick={() => deleteShift(params.row.id)}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
+        return (
+          <div style={{ lineHeight: "20px" }}>
+            {date}
+            <br />
+            {time?.split(".")[0]}
+          </div>
+        );
+      },
     },
+
   ];
 
   return (

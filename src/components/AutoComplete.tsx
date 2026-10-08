@@ -1,4 +1,4 @@
-import {Autocomplete,TextField,} from "@mui/material";
+import { Autocomplete, TextField, } from "@mui/material";
 
 interface AutoCompleteOption {
   label: string;
@@ -25,8 +25,8 @@ function AutoComplete({
       fullWidth
       options={options}
       value={value}
-      getOptionLabel={(option) =>option.label}
-      onChange={(_, newValue) =>onChange(newValue)}
+      getOptionLabel={(option) => option.label}
+      onChange={(_, newValue) => onChange(newValue)}
       className="custom-autocomplete"
       renderInput={(params) => (
         <TextField {...params} label={label} />

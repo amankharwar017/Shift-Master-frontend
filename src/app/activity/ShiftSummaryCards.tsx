@@ -22,7 +22,7 @@ function ShiftSummaryCards({ total, active, inactive, night }: ShiftSummaryCards
   return (
     <Grid container spacing={1} sx={{ marginBottom: 3 }}>
       {cards.map((card) => (
-       <Grid size={{ xs: 12, sm: 6, md: 6 }} key={card.title}>
+        <Grid size={{ xs: 12, sm: 6, md: 6 }} key={card.title}>
           <Card elevation={0} className={`summary-card ${card.className}`}>
             <CardContent>
               <Box className="summary-card-content">

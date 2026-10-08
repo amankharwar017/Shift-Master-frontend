@@ -20,17 +20,16 @@ function DashboardLayout({
 
       <Box component="main" className="dashboard-main">
         <Header />
-         <Box className="dashboard-content"> {children} </Box>
-         {showAddButton && (
+        <Box className="dashboard-content"> {children} </Box>
+        {showAddButton && (
           <Button
             variant="contained"
-            startIcon={<AddIcon />}
             onClick={onAddShift}
             className="dashboard-add-button"
           >
-            Add New Shift
+            <AddIcon />
           </Button>
-         )}
+        )}
       </Box>
     </Box>
   );

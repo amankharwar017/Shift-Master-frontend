@@ -1,4 +1,7 @@
-import axiosInstance from "./axiosInstance";
+import axios from "axios";
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:8080",
+});
 
 export const saveShift = async (shiftData: unknown) => {
   return await axiosInstance.post("/shift/save", shiftData);

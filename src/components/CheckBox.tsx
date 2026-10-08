@@ -14,7 +14,7 @@ function CheckBox({ label, name, checked, onChange }: CheckBoxProps) {
   return (
     <FormControlLabel
       className="custom-checkbox"
-      control={<Checkbox name={name} checked={checked} onChange={onChange} /> }
+      control={<Checkbox name={name} checked={checked} onChange={onChange} />}
       label={label}
     />
   );

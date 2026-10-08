@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   Box,
@@ -6,26 +6,43 @@ import {
   Card,
   CardContent,
   Divider,
+  IconButton,
   Typography,
 } from "@mui/material";
-import TextField from "./TextField";
-import DropDown from "./DropDown";
-import CheckBox from "./CheckBox";
-import RadioButton from "./RadioButton";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import TextField from "../../components/TextField";
+import DropDown from "../../components/DropDown";
+import CheckBox from "../../components/CheckBox";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import SearchIcon from "@mui/icons-material/Search";
 
 interface ShiftSearchFormProps {
   onSearch: (searchData: Record<string, any>) => void;
 }
 
 function ShiftSearchForm({ onSearch }: ShiftSearchFormProps) {
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const fromDateRef = useRef<HTMLInputElement>(null);
+  const toDateRef = useRef<HTMLInputElement>(null);
+
+  const getDate = (daysAgo = 0) => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   const initialFormData = {
     searchText: "",
     shiftType: "",
     nightShift: false,
     status: null as boolean | null,
-    createdDateFrom: "",
-    createdDateTo: "",
+    createdDateFrom: getDate(7),
+    createdDateTo: getDate(),
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -87,7 +104,12 @@ function ShiftSearchForm({ onSearch }: ShiftSearchFormProps) {
   };
 
   const handleReset = () => {
-    setFormData(initialFormData);
+    setFormData({
+      ...initialFormData,
+      createdDateFrom: getDate(7),
+      createdDateTo: getDate(),
+    });
+
     setShowMoreFilters(false);
   };
 
@@ -112,6 +134,16 @@ function ShiftSearchForm({ onSearch }: ShiftSearchFormProps) {
             name="searchText"
             value={formData.searchText}
             onChange={handleChange}
+            inputRef={searchInputRef}
+            endIcon={
+              <SearchIcon
+                onClick={() => searchInputRef.current?.focus()}
+                sx={{
+                  color: "#1976d2",
+                  cursor: "pointer",
+                }}
+              />
+            }
           />
 
           <Box className="shift-search-date-field">
@@ -119,13 +151,37 @@ function ShiftSearchForm({ onSearch }: ShiftSearchFormProps) {
               From Date
             </Typography>
 
-            <TextField
-              label=""
-              name="createdDateFrom"
-              value={formData.createdDateFrom}
-              onChange={handleChange}
-              type="date"
-            />
+            <Box className="shift-date-picker-wrapper">
+              <TextField
+                label=""
+                name="createdDateFrom"
+                value={formData.createdDateFrom}
+                onChange={handleChange}
+                type="text"
+                placeholder="YYYY-MM-DD"
+                endIcon={
+                  <IconButton
+                    size="small"
+                    onClick={() => fromDateRef.current?.showPicker()}
+                  >
+                    <CalendarMonthIcon fontSize="small" />
+                  </IconButton>
+                }
+              />
+
+              <input
+                ref={fromDateRef}
+                type="date"
+                value={formData.createdDateFrom}
+                onChange={(event) =>
+                  setFormData((previous) => ({
+                    ...previous,
+                    createdDateFrom: event.target.value,
+                  }))
+                }
+                className="hidden-date-picker"
+              />
+            </Box>
           </Box>
 
           <Box className="shift-search-date-field">
@@ -133,13 +189,37 @@ function ShiftSearchForm({ onSearch }: ShiftSearchFormProps) {
               To Date
             </Typography>
 
-            <TextField
-              label=""
-              name="createdDateTo"
-              value={formData.createdDateTo}
-              onChange={handleChange}
-              type="date"
-            />
+            <Box className="shift-date-picker-wrapper">
+              <TextField
+                label=""
+                name="createdDateTo"
+                value={formData.createdDateTo}
+                onChange={handleChange}
+                type="text"
+                placeholder="YYYY-MM-DD"
+                endIcon={
+                  <IconButton
+                    size="small"
+                    onClick={() => toDateRef.current?.showPicker()}
+                  >
+                    <CalendarMonthIcon fontSize="small" />
+                  </IconButton>
+                }
+              />
+
+              <input
+                ref={toDateRef}
+                type="date"
+                value={formData.createdDateTo}
+                onChange={(event) =>
+                  setFormData((previous) => ({
+                    ...previous,
+                    createdDateTo: event.target.value,
+                  }))
+                }
+                className="hidden-date-picker"
+              />
+            </Box>
           </Box>
         </Box>
 
@@ -172,7 +252,7 @@ function ShiftSearchForm({ onSearch }: ShiftSearchFormProps) {
                 onChange={handleCheckBoxChange}
               />
 
-              <RadioButton
+              <DropDown
                 label="Status"
                 name="status"
                 value={
@@ -187,34 +267,33 @@ function ShiftSearchForm({ onSearch }: ShiftSearchFormProps) {
                   { label: "Active", value: "true" },
                   { label: "Inactive", value: "false" },
                 ]}
-                onChange={(_, value) =>
+                onChange={(event) =>
                   setFormData((previous) => ({
                     ...previous,
                     status:
-                      value === "all"
+                      event.target.value === "all"
                         ? null
-                        : value === "true",
+                        : event.target.value === "true",
                   }))
                 }
-                row
               />
             </Box>
           </Box>
         )}
 
-        <Box className="shift-search-more-filter-button">
-          <Button
-            variant="text"
-            startIcon = {<FilterListIcon/>}
-            onClick={() =>
-              setShowMoreFilters((previous) => !previous)
-            }
-          >
-            {showMoreFilters ? "Hide Filters" : "More Filters"}
-          </Button>
-        </Box>
-
         <Box className="shift-search-actions">
+          <Box className="shift-search-more-filter-button">
+            <Button
+              variant="text"
+              startIcon={<FilterListIcon />}
+              onClick={() =>
+                setShowMoreFilters((previous) => !previous)
+              }
+            >
+              {showMoreFilters ? "Hide Filters" : "More Filters"}
+            </Button>
+          </Box>
+
           <Button
             variant="outlined"
             onClick={handleReset}

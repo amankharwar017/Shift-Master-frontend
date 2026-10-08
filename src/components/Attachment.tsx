@@ -1,8 +1,4 @@
-import {
-  Box,
-  Button,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Typography, } from "@mui/material";
 
 interface AttachmentProps {
   label: string;
@@ -15,14 +11,9 @@ function Attachment({
   accept = ".pdf,.doc,.docx",
   onChange,
 }: AttachmentProps) {
-  const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file =
-      event.target.files?.[0] ?? null;
-
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
     onChange(file);
-
     event.target.value = "";
   };
 

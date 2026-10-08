@@ -28,15 +28,8 @@ function MultiselectAutoComplete({
       value={value}
       disableCloseOnSelect
       getOptionLabel={(option) => option.label}
-      isOptionEqualToValue={(
-        option,
-        selectedOption
-      ) =>
-        option.value === selectedOption.value
-      }
-      onChange={(_, newValue) =>
-        onChange(newValue)
-      }
+      isOptionEqualToValue={(option, selectedOption) => option.value === selectedOption.value}
+      onChange={(_, newValue) => onChange(newValue)}
       className="custom-multiselect-autocomplete"
       renderOption={(props, option, { selected }) => (
         <li {...props}>
