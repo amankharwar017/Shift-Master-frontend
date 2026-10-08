@@ -1,0 +1,811 @@
+/* =========================
+   ShiftMaster - App.css
+   ========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #eef4fb;
+}
+
+/* =========================
+   Dashboard Layout
+   ========================= */
+
+.dashboard-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: #eef4fb;
+}
+
+.dashboard-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  background: #eef4fb;
+}
+
+.dashboard-content {
+  width: 100%;
+  margin-top: 46px;
+  padding: 20px 18px 28px;
+}
+
+/* =========================
+   Header
+   ========================= */
+
+.dashboard-header {
+  height: 46px !important;
+  z-index: 1201 !important;
+  background: linear-gradient(
+    90deg,
+    #dbeafe 0%,
+    #ede9fe 52%,
+    #fce7f3 100%
+  ) !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+.dashboard-header-toolbar {
+  min-height: 46px !important;
+  height: 46px !important;
+  padding: 0 24px !important;
+}
+
+.dashboard-header-title {
+  color: #2563eb !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+}
+
+/* =========================
+   Sidebar
+   ========================= */
+
+.dashboard-sidebar {
+  width: 180px !important;
+  flex-shrink: 0;
+}
+
+.dashboard-sidebar .MuiDrawer-paper {
+  width: 180px !important;
+  top: 46px !important;
+  height: calc(100vh - 46px) !important;
+  border-right: none !important;
+  background: #000000 !important;
+}
+
+.sidebar-list {
+  padding: 8px 10px !important;
+  margin: 0 !important;
+}
+
+.sidebar-dashboard-button {
+  min-height: 38px !important;
+  margin-bottom: 5px !important;
+  padding: 5px 10px !important;
+  border-radius: 6px !important;
+  background: #ef2020 !important;
+  color: #ffffff !important;
+}
+
+.sidebar-dashboard-button:hover,
+.sidebar-dashboard-button.Mui-selected,
+.sidebar-dashboard-button.Mui-selected:hover {
+  background: #ef2020 !important;
+}
+
+.sidebar-icon {
+  min-width: 32px !important;
+  color: #ffffff !important;
+}
+
+.sidebar-dashboard-button .MuiListItemIcon-root {
+  color: #ffffff !important;
+}
+
+.sidebar-text .MuiListItemText-primary {
+  color: #ffffff !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+}
+
+.sidebar-arrow {
+  color: #ffffff !important;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.sidebar-submenu {
+  margin-top: 5px;
+}
+
+.sidebar-shift-list-button {
+  min-height: 32px !important;
+  padding: 5px 10px !important;
+  justify-content: flex-start !important;
+  border-radius: 6px !important;
+  background: #126b35 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  text-transform: none !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+}
+
+.sidebar-shift-list-button:hover {
+  background: #126b35 !important;
+}
+
+/* =========================
+   Shift Management Header
+   ========================= */
+
+.shift-management-header {
+  margin-bottom: 20px;
+}
+
+.shift-management-title {
+  color: #0f172a !important;
+  font-size: 1.45rem !important;
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+}
+
+.shift-management-subtitle {
+  margin-top: 5px !important;
+  color: #64748b !important;
+  font-size: 0.8rem !important;
+}
+
+/* =========================
+   Search + Summary
+   ========================= */
+
+.dashboard-search-summary {
+  display: grid;
+  grid-template-columns: 50% 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.dashboard-search-summary > * {
+  min-width: 0;
+}
+
+.dashboard-search-summary > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* =========================
+   Search Card
+   ========================= */
+
+.shift-search-card {
+  width: 100%;
+  min-height: 0;
+  border: 1px solid #dbe4ef !important;
+  border-radius: 10px !important;
+  background: #cbd5e1 !important;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05) !important;
+}
+
+.shift-search-card-content {
+  padding: 20px 20px 12px !important;
+   background: #cbd5e1 !important;
+}
+
+.shift-search-title {
+  color: #0f172a !important;
+  font-size: 0.98rem !important;
+  font-weight: 700 !important;
+}
+
+.shift-search-subtitle {
+  margin-top: 2px !important;
+  color: #475569 !important;
+  font-size: 0.74rem !important;
+}
+
+.shift-search-divider {
+  margin-top: 4px !important;
+  margin-bottom: 4px !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Search field full width
+   Date fields below it */
+
+.shift-search-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.shift-search-fields > .custom-text-field {
+  grid-column: 1 / -1;
+}
+
+.shift-search-date-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.shift-search-date-label {
+  margin: 0 0 5px !important;
+  color: #475569 !important;
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+}
+
+.shift-search-more-filters {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #cbd5e1;
+}
+
+.shift-search-options {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 12px;
+}
+
+.shift-search-more-filter-button {
+  margin-top: 4px;
+   margin-bottom: -6px;
+}
+
+.shift-search-more-filter-button .MuiButton-root {
+  min-width: 0 !important;
+  padding: 2px 6px !important;
+  color: #0f3d91 !important;
+   background: #e0ecff !important;
+    border: 1px solid #93c5fd !important;
+  border-radius: 5px !important;
+  text-transform: none !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+}
+
+.shift-search-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: -4px;
+}
+
+.shift-search-reset-button,
+.shift-search-button {
+  min-height: 31px !important;
+  padding: 4px 14px !important;
+  border-radius: 6px !important;
+  text-transform: none !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+}
+
+.shift-search-reset-button {
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+  background: #ffffff !important;
+}
+
+.shift-search-reset-button:hover {
+  background: #ffffff !important;
+}
+
+.shift-search-button {
+  background: #1976e8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 8px rgba(25, 118, 232, 0.18) !important;
+}
+
+.shift-search-button:hover {
+  background: #0867d8 !important;
+}
+
+/* =========================
+   Summary Cards
+   ========================= */
+
+.summary-card {
+  width: 100%;
+  min-height: 96px;
+  border-radius: 10px !important;
+
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08) !important;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.summary-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14) !important;
+}
+
+
+.summary-card .MuiCardContent-root {
+  padding: 15px !important;
+}
+
+.summary-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+}
+
+.summary-card-title {
+  margin-bottom: 5px !important;
+  color: #64748b !important;
+  font-size: 0.72rem !important;
+}
+
+
+.summary-card-value {
+  color: #0f172a !important;
+  font-size: 1.55rem !important;
+  line-height: 1.1 !important;
+  font-weight: 700 !important;
+}
+
+.summary-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+}
+
+.summary-card-icon svg {
+  font-size: 21px;
+}
+
+.summary-total {
+  background: #d1d5db !important;
+  border: 1px solid #aeb6c2 !important;
+}
+
+.summary-total .summary-card-icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.summary-active {
+  background: #fff7ed !important;
+  border: 1px solid #fed7aa !important;
+}
+
+.summary-active .summary-card-icon {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.summary-inactive {
+  background: #bfdbfe !important;
+  border: 1px solid #60a5fa !important;
+}
+
+.summary-inactive .summary-card-icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.summary-night {
+  background: #ffffff !important;
+  border: 1px solid #fef3c7 !important;
+}
+
+.summary-night .summary-card-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* =========================
+   Shift Table
+   ========================= */
+
+.shift-table-card {
+  width: 100%;
+  border: 1px solid #dbe4ef !important;
+  border-radius: 9px !important;
+  overflow: hidden;
+  background: #1f2937 !important;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05) !important;
+}
+
+.shift-table-card-content {
+  padding: 0 !important;
+  background: #1f2937 !important;
+}
+
+.shift-table-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 13px 16px !important;
+  background: #1f2937 !important;
+}
+
+.shift-table-title {
+  color: #ffffff !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+}
+
+.shift-table-subtitle {
+  margin-top: 3px !important;
+  color: #ffffff !important;
+  font-size: 0.7rem !important;
+}
+
+.shift-table-back-button {
+  min-height: 29px !important;
+  padding: 3px 10px !important;
+  border-color: #1976e8 !important;
+  color: #1976e8 !important;
+  border-radius: 5px !important;
+  font-size: 0.68rem !important;
+  text-transform: uppercase !important;
+}
+
+.shift-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.shift-table-grid-wrapper {
+  width: 100%;
+  min-width: 1050px;
+}
+
+.shift-data-grid {
+  border: none !important;
+  background: #ffffff !important;
+}
+
+.shift-data-grid .MuiDataGrid-columnHeaders {
+  min-height: 42px !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #dbe2ea !important;
+}
+
+.shift-data-grid .MuiDataGrid-columnHeader {
+  color: #475569 !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+}
+
+.shift-data-grid .MuiDataGrid-columnHeaderTitle {
+  font-weight: 700 !important;
+}
+
+.shift-data-grid .MuiDataGrid-cell {
+  color: #334155 !important;
+  font-size: 0.68rem !important;
+  border-bottom: 1px solid #dbe2ea !important;
+}
+
+.shift-data-grid .MuiDataGrid-row:nth-of-type(even) {
+  background: #eef3ff !important;
+}
+
+.shift-data-grid .MuiDataGrid-row:nth-of-type(odd) {
+  background: #ffffff !important;
+}
+
+.shift-data-grid .MuiDataGrid-row:hover {
+  background: #e2e8f0 !important;
+}
+
+.shift-data-grid .MuiDataGrid-footerContainer {
+  min-height: 40px !important;
+  background: #ffffff !important;
+  border-top: 1px solid #dbe2ea !important;
+}
+
+.shift-data-grid .MuiTablePagination-root {
+  color: #475569 !important;
+  font-size: 0.68rem !important;
+}
+
+.shift-data-grid .MuiDataGrid-sortIcon {
+  color: #2563eb !important;
+}
+
+.shift-data-grid .MuiChip-root {
+  height: 20px !important;
+  font-size: 0.62rem !important;
+  font-weight: 600 !important;
+}
+
+.shift-table-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.shift-edit-button {
+  padding: 3px !important;
+  color: #1976e8 !important;
+}
+
+.shift-delete-button {
+  padding: 3px !important;
+  color: #dc2626 !important;
+}
+
+/* =========================
+   Common Form Controls
+   ========================= */
+
+.custom-text-field .MuiOutlinedInput-root,
+.custom-text-area .MuiOutlinedInput-root,
+.custom-dropdown .MuiOutlinedInput-root,
+.custom-multiselect .MuiOutlinedInput-root,
+.custom-autocomplete .MuiOutlinedInput-root,
+.custom-multiselect-autocomplete .MuiOutlinedInput-root {
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.custom-text-field .MuiOutlinedInput-input,
+.custom-dropdown .MuiSelect-select {
+  padding: 9px 11px;
+  font-size: 0.76rem;
+  color: #334155;
+}
+
+.custom-text-field .MuiInputLabel-root,
+.custom-text-area .MuiInputLabel-root,
+.custom-dropdown .MuiInputLabel-root,
+.custom-autocomplete .MuiInputLabel-root,
+.custom-multiselect-autocomplete .MuiInputLabel-root {
+  font-size: 0.75rem;
+}
+
+.custom-text-field .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline,
+.custom-text-area .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline,
+.custom-dropdown .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline,
+.custom-autocomplete .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline,
+.custom-multiselect-autocomplete .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #1976e8 !important;
+  border-width: 1px !important;
+}
+
+.custom-text-field .MuiInputLabel-root.Mui-focused,
+.custom-text-area .MuiInputLabel-root.Mui-focused,
+.custom-dropdown .MuiInputLabel-root.Mui-focused,
+.custom-autocomplete .MuiInputLabel-root.Mui-focused,
+.custom-multiselect-autocomplete .MuiInputLabel-root.Mui-focused {
+  color: #1976e8 !important;
+}
+
+.custom-text-field .MuiFormHelperText-root,
+.custom-text-area .MuiFormHelperText-root,
+.custom-dropdown .MuiFormHelperText-root,
+.custom-multiselect .MuiFormHelperText-root {
+  margin-left: 0;
+  font-size: 0.67rem;
+}
+
+.custom-checkbox {
+  margin-right: 10px !important;
+}
+
+.custom-checkbox .MuiCheckbox-root {
+  padding: 4px !important;
+  color: #94a3b8;
+}
+
+.custom-checkbox .MuiCheckbox-root.Mui-checked {
+  color: #1976e8;
+}
+
+.custom-checkbox .MuiFormControlLabel-label {
+  color: #475569;
+  font-size: 0.74rem;
+}
+
+.custom-radio-button .MuiFormLabel-root {
+  color: #475569 !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+}
+
+.custom-radio-button .MuiRadio-root {
+  padding: 4px !important;
+  color: #94a3b8;
+}
+
+.custom-radio-button .MuiRadio-root.Mui-checked {
+  color: #1976e8;
+}
+
+.custom-radio-button .MuiFormControlLabel-label {
+  color: #475569;
+  font-size: 0.74rem;
+}
+
+.custom-dropdown-menu-item,
+.custom-multiselect-menu-item {
+  font-size: 0.76rem !important;
+}
+
+.custom-attachment-button {
+   min-height: 34px !important;
+  padding: 5px 14px !important;
+  border-radius: 7px !important;
+
+  background: #e0ecff !important;
+  border: 1px solid #93c5fd !important;
+  color: #2563eb !important;
+
+  text-transform: none !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+
+  transition: all 0.2s ease !important;
+}
+
+.custom-attachment-text {
+  display: block !important;
+  margin-top: 5px !important;
+  color: #64748b !important;
+  font-size: 0.68rem !important;
+}
+
+/* =========================
+   Shift Form
+   ========================= */
+
+.shift-form-card {
+  width: 100%;
+  padding: 24px;
+  border: 1px solid #dbe4ef !important;
+  border-radius: 10px !important;
+  background: #f1f5f9 !important;
+}
+
+.shift-form-title {
+  color: #0f172a !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+}
+
+.shift-form-subtitle {
+  margin-top: 4px !important;
+  color: #64748b !important;
+  font-size: 0.8rem !important;
+}
+
+.shift-form-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.shift-form-textareas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.shift-form-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.shift-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #dbe4ef;
+}
+
+/* =========================
+   Floating Add Button
+   ========================= */
+
+.dashboard-add-button {
+  position: fixed !important;
+  right: 24px !important;
+  bottom: 8px !important;
+  z-index: 1300 !important;
+
+  min-height: 36px !important;
+  padding: 6px 14px !important;
+
+  background: #1976e8 !important;
+  color: #ffffff !important;
+
+  border-radius: 7px !important;
+  text-transform: none !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+
+  box-shadow: 0 4px 12px rgba(25, 118, 232, 0.3) !important;
+}
+
+.dashboard-add-button:hover {
+  background: #0867d8 !important;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 1100px) {
+  .dashboard-search-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .shift-search-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shift-form-fields,
+  .shift-form-textareas {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-content {
+    padding: 18px 12px 70px;
+  }
+
+  .shift-search-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .shift-search-options {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .shift-search-actions {
+    justify-content: stretch;
+  }
+
+  .shift-search-reset-button,
+  .shift-search-button {
+    flex: 1;
+  }
+
+  .shift-form-actions {
+    justify-content: stretch;
+  }
+}
+.custom-text-field .MuiOutlinedInput-root.Mui-focused {
+  background: #e2e8f0 !important;
+}
+
+.custom-text-field .MuiOutlinedInput-root.Mui-focused
+  .MuiOutlinedInput-notchedOutline {
+  border-color: #64748b !important;
+}
