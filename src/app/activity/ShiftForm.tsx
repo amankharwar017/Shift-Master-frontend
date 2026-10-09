@@ -3,13 +3,12 @@ import type { ChangeEvent } from "react";
 import { Box, Button, Divider, Paper, Typography } from "@mui/material";
 import TextField from "../../components/TextField";
 import TextArea from "../../components/TextArea";
-import DropDown from "../../components/DropDown";
+import DropDownMultiselect from "../../components/DropDownMultiselect";
 import MultiselectAutoComplete from "../../components/MultiselectAutoComplete";
 import CheckBox from "../../components/CheckBox";
 import Attachment from "../../components/Attachment";
-import RadioButton from "../../components/RadioButton";
 import { saveShift, getShiftById, updateShift } from "./shiftApi";
-import { shiftValidationSchema } from "../../shiftValidation/ShiftValidation";
+import { shiftValidationSchema } from "./ShiftValidation";
 import type { ShiftFormData } from "../../types/shift";
 
 interface ShiftFormProps {
@@ -60,82 +59,64 @@ const dayOptions = [
 
 function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
   const [formData, setFormData] = useState<ShiftFormData>(initialFormData);
+  const [originalFormData, setOriginalFormData] = useState<ShiftFormData | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
 
-  const handleChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
-
-    setErrors((previous) => ({
-      ...previous,
-      [name]: "",
-    }));
+    setFormData((previous) => ({ ...previous, [name]: value }));
+    setErrors((previous) => ({ ...previous, [name]: "" }));
   };
 
-  const handleNumberChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleNumberChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value === "" ? null : Number(value),
-    }));
-
-    setErrors((previous) => ({
-      ...previous,
-      [name]: "",
-    }));
+    setFormData((previous) => ({ ...previous, [name]: value === "" ? null : Number(value) }));
+    setErrors((previous) => ({ ...previous, [name]: "" }));
   };
 
-  const handleCheckBoxChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    checked: boolean
-  ) => {
+  const handleCheckBoxChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
     const { name } = event.target;
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: checked,
-    }));
-
-    setErrors((previous) => ({
-      ...previous,
-      [name]: "",
-    }));
+    setFormData((previous) => ({ ...previous, [name]: checked }));
+    setErrors((previous) => ({ ...previous, [name]: "" }));
   };
 
   const handleFileChange = (file: File | null) => {
     setSelectedFile(file);
-
     setFormData((previous) => ({
       ...previous,
-      attachment: file?.name ?? "",
+      attachment: file?.name ?? originalFormData?.attachment ?? "",
     }));
+    setErrors((previous) => ({ ...previous, attachment: "" }));
+  };
 
-    setErrors((previous) => ({
-      ...previous,
-      attachment: "",
-    }));
+  const hasFormChanged = () => {
+    if (originalFormData === null) return true;
+
+    const normalizeData = (data: ShiftFormData) => ({
+      ...data,
+      applicableDays: [...data.applicableDays].sort(),
+    });
+
+    return (
+      JSON.stringify(normalizeData(formData)) !==
+      JSON.stringify(normalizeData(originalFormData)) ||
+      selectedFile !== null
+    );
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage("");
     setErrors({});
+    if (editShiftId !== null && !hasFormChanged()) {
+      onSuccess("No changes detected.");
+      return;
+    }
 
     try {
-      await shiftValidationSchema.validate(formData, {
-        abortEarly: false,
-      });
+      await shiftValidationSchema.validate(formData, { abortEarly: false });
 
       const payload = {
         shiftCode: formData.shiftCode,
@@ -152,9 +133,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
         nightShift: formData.nightShift,
         weeklyOff: formData.weeklyOff,
         shiftColor: formData.shiftColor || null,
-        applicableDays: formData.applicableDays.map((day) =>
-          day.toUpperCase()
-        ),
+        applicableDays: formData.applicableDays.map((day) => day.toUpperCase()),
         description: formData.description || null,
         attachment: formData.attachment || null,
         remarks: formData.remarks || null,
@@ -163,34 +142,20 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
 
       if (editShiftId !== null) {
         const response = await updateShift(editShiftId, payload);
-
-        setMessage(
-          response.data?.message ?? "Shift updated successfully."
-        );
-
-        onSuccess(
-          response.data?.message ?? "Shift updated successfully."
-        );
+        onSuccess(response.data?.message ?? "Shift updated successfully.");
       } else {
         const response = await saveShift(payload);
-
-        const successMessage =
-          response.data?.message ?? "Shift saved successfully.";
-
-        setMessage(successMessage);
-        onSuccess(successMessage);
+        onSuccess(response.data?.message ?? "Shift saved successfully.");
       }
 
       setFormData(initialFormData);
+      setOriginalFormData(null);
       setSelectedFile(null);
     } catch (error: unknown) {
       if (error instanceof Error && error.name === "ValidationError") {
         const validationErrors: Record<string, string> = {};
         const yupError = error as {
-          inner?: Array<{
-            path?: string;
-            message: string;
-          }>;
+          inner?: Array<{ path?: string; message: string }>;
         };
 
         yupError.inner?.forEach((item) => {
@@ -213,7 +178,6 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
       };
 
       const backendMessage = axiosError.response?.data?.message;
-
       setMessage(backendMessage ?? "Failed to save shift.");
     }
   };
@@ -222,6 +186,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
     const fetchShiftForEdit = async () => {
       if (editShiftId === null) {
         setFormData(initialFormData);
+        setOriginalFormData(null);
         setSelectedFile(null);
         setErrors({});
         setMessage("");
@@ -232,7 +197,7 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
         const response = await getShiftById(editShiftId);
         const shift = response.data;
 
-        setFormData({
+        const shiftData: ShiftFormData = {
           shiftCode: shift.shiftCode ?? "",
           shiftName: shift.shiftName ?? "",
           displayName: shift.displayName ?? "",
@@ -252,7 +217,13 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
           attachment: shift.attachment ?? "",
           remarks: shift.remarks ?? "",
           status: shift.status ?? true,
-        });
+        };
+
+        setFormData(shiftData);
+        setOriginalFormData(shiftData);
+        setSelectedFile(null);
+        setErrors({});
+        setMessage("");
       } catch (error) {
         console.error("failed to fetch data for edit: ", error);
       }
@@ -268,228 +239,66 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
           <Typography variant="h6" className="shift-form-title">
             Shift Details
           </Typography>
-
           <Typography variant="body2" className="shift-form-subtitle">
             Create and manage shift details
           </Typography>
         </Box>
-
         <Divider className="shift-form-divider" />
-
         <Box className="shift-form-fields">
-          <TextField
-            label="Shift Code"
-            name="shiftCode"
-            value={formData.shiftCode}
-            onChange={handleChange}
-            required
-            error={Boolean(errors.shiftCode)}
-            helperText={errors.shiftCode}
-          />
-
-          <TextField
-            label="Shift Name"
-            name="shiftName"
-            value={formData.shiftName}
-            onChange={handleChange}
-            required
-            error={Boolean(errors.shiftName)}
-            helperText={errors.shiftName}
-          />
-
-          <TextField
-            label="Display Name"
-            name="displayName"
-            value={formData.displayName}
-            onChange={handleChange}
-            error={Boolean(errors.displayName)}
-            helperText={errors.displayName}
-          />
-
-          <DropDown
+          <TextField label="Shift Code" name="shiftCode" value={formData.shiftCode} onChange={handleChange} required error={Boolean(errors.shiftCode)} helperText={errors.shiftCode} />
+          <TextField label="Shift Name" name="shiftName" value={formData.shiftName} onChange={handleChange} required error={Boolean(errors.shiftName)} helperText={errors.shiftName} />
+          <TextField label="Display Name" name="displayName" value={formData.displayName} onChange={handleChange} error={Boolean(errors.displayName)} helperText={errors.displayName} />
+          <DropDownMultiselect
             label="Shift Type"
             name="shiftType"
             value={formData.shiftType}
             options={shiftTypeOptions}
-            onChange={(event) =>
-              setFormData((previous) => ({
-                ...previous,
-                shiftType: String(event.target.value),
-              }))
-            }
+            onChange={(event) => setFormData((previous) => ({ ...previous, shiftType: String(event.target.value) }))}
             required
             error={Boolean(errors.shiftType)}
             helperText={errors.shiftType}
           />
-
-          <TextField
-            label="Start Time"
-            name="startTime"
-            value={formData.startTime}
-            onChange={handleChange}
-            type="time"
-            required
-            error={Boolean(errors.startTime)}
-            helperText={errors.startTime}
-          />
-
-          <TextField
-            label="End Time"
-            name="endTime"
-            value={formData.endTime}
-            onChange={handleChange}
-            type="time"
-            required
-            error={Boolean(errors.endTime)}
-            helperText={errors.endTime}
-          />
-
-          <TextField
-            label="Break Start"
-            name="breakStart"
-            value={formData.breakStart}
-            onChange={handleChange}
-            type="time"
-            error={Boolean(errors.breakStart)}
-            helperText={errors.breakStart}
-          />
-
-          <TextField
-            label="Break End"
-            name="breakEnd"
-            value={formData.breakEnd}
-            onChange={handleChange}
-            type="time"
-            error={Boolean(errors.breakEnd)}
-            helperText={errors.breakEnd}
-          />
-
-          <TextField
-            label="Grace In"
-            name="graceIn"
-            value={
-              formData.graceIn === null
-                ? ""
-                : String(formData.graceIn)
-            }
-            onChange={handleNumberChange}
-            type="number"
-            error={Boolean(errors.graceIn)}
-            helperText={errors.graceIn}
-          />
-
-          <TextField
-            label="Grace Out"
-            name="graceOut"
-            value={
-              formData.graceOut === null
-                ? ""
-                : String(formData.graceOut)
-            }
-            onChange={handleNumberChange}
-            type="number"
-            error={Boolean(errors.graceOut)}
-            helperText={errors.graceOut}
-          />
-
-          <TextField
-            label="Shift Color"
-            name="shiftColor"
-            value={formData.shiftColor}
-            onChange={handleChange}
-            error={Boolean(errors.shiftColor)}
-            helperText={errors.shiftColor}
-          />
-
+          <TextField label="Start Time" name="startTime" value={formData.startTime} onChange={handleChange} type="time" required error={Boolean(errors.startTime)} helperText={errors.startTime} />
+          <TextField label="End Time" name="endTime" value={formData.endTime} onChange={handleChange} type="time" required error={Boolean(errors.endTime)} helperText={errors.endTime} />
+          <TextField label="Break Start" name="breakStart" value={formData.breakStart} onChange={handleChange} type="time" error={Boolean(errors.breakStart)} helperText={errors.breakStart} />
+          <TextField label="Break End" name="breakEnd" value={formData.breakEnd} onChange={handleChange} type="time" error={Boolean(errors.breakEnd)} helperText={errors.breakEnd} />
+          <TextField label="Grace In" name="graceIn" value={formData.graceIn === null ? "" : String(formData.graceIn)} onChange={handleNumberChange} type="number" error={Boolean(errors.graceIn)} helperText={errors.graceIn} />
+          <TextField label="Grace Out" name="graceOut" value={formData.graceOut === null ? "" : String(formData.graceOut)} onChange={handleNumberChange} type="number" error={Boolean(errors.graceOut)} helperText={errors.graceOut} />
+          <TextField label="Shift Color" name="shiftColor" value={formData.shiftColor} onChange={handleChange} error={Boolean(errors.shiftColor)} helperText={errors.shiftColor} />
           <MultiselectAutoComplete
             label="Applicable Days"
             name="applicableDays"
             value={formData.applicableDays}
             options={dayOptions}
-            onChange={(value) =>
-              setFormData((previous) => ({
-                ...previous,
-                applicableDays: value,
-              }))
-            }
+            onChange={(value) => setFormData((previous) => ({ ...previous, applicableDays: value }))}
             error={Boolean(errors.applicableDays)}
             helperText={errors.applicableDays}
           />
         </Box>
-
         <Box className="shift-form-checkboxes">
-          <CheckBox
-            label="Overtime Allowed"
-            name="overtimeAllowed"
-            checked={formData.overtimeAllowed}
-            onChange={handleCheckBoxChange}
-          />
-
-          <CheckBox
-            label="Night Shift"
-            name="nightShift"
-            checked={formData.nightShift}
-            onChange={handleCheckBoxChange}
-          />
-
-          <CheckBox
-            label="Weekly Off"
-            name="weeklyOff"
-            checked={formData.weeklyOff}
-            onChange={handleCheckBoxChange}
-          />
+          <CheckBox label="Overtime Allowed" name="overtimeAllowed" checked={formData.overtimeAllowed} onChange={handleCheckBoxChange} />
+          <CheckBox label="Night Shift" name="nightShift" checked={formData.nightShift} onChange={handleCheckBoxChange} />
+          <CheckBox label="Weekly Off" name="weeklyOff" checked={formData.weeklyOff} onChange={handleCheckBoxChange} />
         </Box>
-
         <Box className="shift-form-textareas">
-          <TextArea
-            label="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            error={Boolean(errors.description)}
-            helperText={errors.description}
-            minRows={4}
-          />
-
-          <TextArea
-            label="Remarks"
-            name="remarks"
-            value={formData.remarks}
-            onChange={handleChange}
-            error={Boolean(errors.remarks)}
-            helperText={errors.remarks}
-            minRows={4}
-          />
+          <TextArea label="Description" name="description" value={formData.description} onChange={handleChange} error={Boolean(errors.description)} helperText={errors.description} minRows={4} />
+          <TextArea label="Remarks" name="remarks" value={formData.remarks} onChange={handleChange} error={Boolean(errors.remarks)} helperText={errors.remarks} minRows={4} />
         </Box>
-
         <Box className="shift-form-attachment">
-          <Attachment
-            label="Choose Attachment"
-            accept=".pdf,.doc,.docx"
-            onChange={handleFileChange}
-          />
-
+          <Attachment label="Choose Attachment" accept=".pdf,.doc,.docx" onChange={handleFileChange} />
           {selectedFile && (
-            <Typography
-              variant="body2"
-              className="shift-form-selected-file"
-            >
+            <Typography variant="body2" className="shift-form-selected-file">
               Selected file: {selectedFile.name}
             </Typography>
           )}
-
           {errors.attachment && (
-            <Typography
-              variant="caption"
-              className="shift-form-attachment-error"
-            >
+            <Typography variant="caption" className="shift-form-attachment-error">
               {errors.attachment}
             </Typography>
           )}
         </Box>
-
-        <Box className="shift-form-status">
-          <RadioButton
+        <Box className="shift-form-status" sx={{ width: 110, mt: 1.5 }}>
+          <DropDownMultiselect
             label="Shift Status"
             name="status"
             value={formData.status ? "true" : "false"}
@@ -497,43 +306,26 @@ function ShiftForm({ editShiftId, onSuccess, onBack }: ShiftFormProps) {
               { label: "Active", value: "true" },
               { label: "Inactive", value: "false" },
             ]}
-            onChange={(_, value) =>
+            onChange={(event) => {
+              const value = String(event.target.value);
               setFormData((previous) => ({
                 ...previous,
                 status: value === "true",
-              }))
-            }
-            row
+              }));
+              setErrors((previous) => ({ ...previous, status: "" }));
+            }}
           />
         </Box>
-
         {message && (
-          <Box
-            className={`shift-form-message ${
-              message.toLowerCase().includes("failed")
-                ? "shift-form-message-error"
-                : "shift-form-message-success"
-            }`}
-          >
+          <Box className={`shift-form-message ${message.toLowerCase().includes("failed") ? "shift-form-message-error" : "shift-form-message-success"}`}>
             <Typography variant="body2">{message}</Typography>
           </Box>
         )}
-
         <Box className="shift-form-actions">
-          <Button
-            type="button"
-            variant="outlined"
-            onClick={onBack}
-            className="shift-form-back-button"
-          >
+          <Button type="button" variant="outlined" onClick={onBack} className="shift-form-back-button">
             Back
           </Button>
-
-          <Button
-            type="submit"
-            variant="contained"
-            className="shift-form-submit-button"
-          >
+          <Button type="submit" variant="contained" className="shift-form-submit-button">
             {editShiftId !== null ? "Update Shift" : "Save Shift"}
           </Button>
         </Box>

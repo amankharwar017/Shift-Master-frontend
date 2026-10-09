@@ -23,6 +23,9 @@ export const deleteShift = async (shiftId: number) => {
   return await axiosInstance.delete(`/shift/delete/${shiftId}`);
 };
 
-export const searchShifts = async (searchParams: Record<string, any>,page = 0 ,size = 10,sort = "id,asc") => {
-  return await axiosInstance.post( "/shift/search", null,{params: {...searchParams,page,size,sort,},});
+export const searchShifts = async (searchParams: Record<string, any>,page = 0,size = 10, sort = "id,asc") => {
+  return await axiosInstance.post("/shift/search", null, {
+    params: { ...searchParams, page, size, sort },
+    paramsSerializer: {indexes: null},
+  });
 };

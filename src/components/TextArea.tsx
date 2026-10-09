@@ -1,29 +1,14 @@
-import {
-  TextField,
-  type TextFieldProps,
-} from "@mui/material";
+import { TextField, type TextFieldProps } from "@mui/material";
 
-interface TextAreaProps
-  extends Omit<TextFieldProps, "variant"> {
+interface TextAreaProps extends Omit<TextFieldProps, "variant"> {
   label: string;
   name: string;
   value: string;
-  onChange: (
-    event: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement
-    >
-  ) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   minRows?: number;
 }
 
-function TextArea({
-  label,
-  name,
-  value,
-  onChange,
-  minRows = 4,
-  ...props
-}: TextAreaProps) {
+function TextArea({ label, name, value, onChange, minRows = 4, ...props }: TextAreaProps) {
   return (
     <TextField
       fullWidth

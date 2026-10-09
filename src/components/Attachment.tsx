@@ -1,4 +1,4 @@
-import { Box, Button, Typography, } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 interface AttachmentProps {
   label: string;
@@ -6,11 +6,7 @@ interface AttachmentProps {
   onChange: (file: File | null) => void;
 }
 
-function Attachment({
-  label,
-  accept = ".pdf,.doc,.docx",
-  onChange,
-}: AttachmentProps) {
+function Attachment({ label, accept = ".pdf,.doc,.docx", onChange }: AttachmentProps) {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
     onChange(file);
@@ -19,25 +15,11 @@ function Attachment({
 
   return (
     <Box className="custom-attachment">
-      <Button
-        variant="outlined"
-        component="label"
-        className="custom-attachment-button"
-      >
+      <Button variant="outlined" component="label" className="custom-attachment-button">
         {label}
-
-        <input
-          hidden
-          type="file"
-          accept={accept}
-          onChange={handleChange}
-        />
+        <input hidden type="file" accept={accept} onChange={handleChange} />
       </Button>
-
-      <Typography
-        variant="caption"
-        className="custom-attachment-text"
-      >
+      <Typography variant="caption" className="custom-attachment-text">
         Allowed files: PDF, DOC, DOCX
       </Typography>
     </Box>

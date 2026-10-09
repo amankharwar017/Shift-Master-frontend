@@ -1,12 +1,7 @@
-import {
-  TextField as MuiTextField,
-  InputAdornment,
-  type TextFieldProps as MuiTextFieldProps,
-} from "@mui/material";
+import { TextField as MuiTextField, InputAdornment, type TextFieldProps as MuiTextFieldProps } from "@mui/material";
 import type { ReactNode } from "react";
 
-interface TextFieldProps
-  extends Omit<MuiTextFieldProps, "variant" | "onChange"> {
+interface TextFieldProps extends Omit<MuiTextFieldProps, "variant" | "onChange"> {
   label: string;
   name: string;
   value: string;
@@ -15,15 +10,7 @@ interface TextFieldProps
   inputRef?: MuiTextFieldProps["inputRef"];
 }
 
-function TextField({
-  label,
-  name,
-  value,
-  onChange,
-  endIcon,
-  inputRef,
-  ...props
-}: TextFieldProps) {
+function TextField({ label, name, value, onChange, endIcon, inputRef, ...props }: TextFieldProps) {
   return (
     <MuiTextField
       fullWidth
@@ -36,11 +23,7 @@ function TextField({
       inputRef={inputRef}
       slotProps={{
         input: {
-          endAdornment: endIcon ? (
-            <InputAdornment position="end">
-              {endIcon}
-            </InputAdornment>
-          ) : undefined,
+          endAdornment: endIcon ? <InputAdornment position="end">{endIcon}</InputAdornment> : undefined,
         },
       }}
       {...props}
