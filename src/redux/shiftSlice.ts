@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { ShiftResponse } from "../../types/shift";
+import type { ShiftResponse } from "../types/shift";
 
 interface ShiftState {
     shifts:ShiftResponse[];

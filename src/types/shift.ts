@@ -42,6 +42,7 @@ export interface ShiftResponse {
   attachment: string;
   remarks: string;
   status: boolean;
+  isDeleted : boolean;
   createdBy: string;
   createdAt: string;
   updatedBy: string;

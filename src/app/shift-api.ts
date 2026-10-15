@@ -29,3 +29,7 @@ export const searchShifts = async (searchParams: Record<string, any>,page = 0,si
     paramsSerializer: {indexes: null},
   });
 };
+
+export const getShiftHistory = async (shiftId: number) => {
+  return await axiosInstance.get(`/shift/history/${shiftId}`);
+};

@@ -1,4 +1,4 @@
-import { object, string, number, boolean, array } from "yup";
+import { object, string, number, boolean, array, type InferType,} from "yup";
 
 export const shiftValidationSchema = object({
   shiftCode: string()
@@ -17,10 +17,10 @@ export const shiftValidationSchema = object({
     .required("Shift type is required")
     .oneOf(
       ["General", "Morning", "Evening", "Night", "Rotational"],
-      "Invalid shift type"),
+      "Invalid shift type"
+    ),
 
-  startTime: string()
-    .required("Start time is required"),
+  startTime: string().required("Start time is required"),
 
   endTime: string()
     .required("End time is required")
@@ -32,8 +32,7 @@ export const shiftValidationSchema = object({
       }
     ),
 
-  breakStart: string()
-    .nullable(),
+  breakStart: string().nullable(),
 
   breakEnd: string()
     .nullable()
@@ -63,14 +62,9 @@ export const shiftValidationSchema = object({
     .max(999, "Grace out cannot exceed 999")
     .nullable(),
 
-  overtimeAllowed: boolean()
-    .required(),
-
-  nightShift: boolean()
-    .required(),
-
-  weeklyOff: boolean()
-    .required(),
+  overtimeAllowed: boolean().required(),
+  nightShift: boolean().required(),
+  weeklyOff: boolean().required(),
 
   shiftColor: string()
     .matches(
@@ -85,13 +79,15 @@ export const shiftValidationSchema = object({
     .max(1000, "Description cannot exceed 1000 characters")
     .nullable(),
 
-  attachment: string()
-    .nullable(),
+  attachment: string().nullable(),
 
   remarks: string()
     .max(1000, "Remarks cannot exceed 1000 characters")
     .nullable(),
 
-  status: boolean()
-    .required("Status is required"),
+  status: boolean().required("Status is required"),
 });
+
+export type ShiftFormValues = InferType<
+  typeof shiftValidationSchema
+>;

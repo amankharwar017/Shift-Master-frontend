@@ -7,9 +7,9 @@ import "./index.css";
 import "./App.css";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  
     <Provider store={store}>
       <App />
     </Provider>
-  </StrictMode>
+  
 );
